@@ -3,11 +3,8 @@ from django.http import HttpResponse
 
 # Create your views here.
 
-def home(request):
-    return HttpResponse("Estou em usuários")
-
 def login(request):
-    pass
+    return render(request, 'login.html')
 
 def register(request):
     pass
