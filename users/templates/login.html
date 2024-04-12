@@ -1,22 +1,17 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
     <link rel="stylesheet" href="{% static 'login/css/login.css' %}">
-    <title>Tela de Login</title>
 </head>
-
 <body>
-    
-    <form action="processar_login.php" method="post" class="loginform">
-        <h2>HelpTI</h2>
-        <input type="text" name="username" placeholder="Nome de usuário" required>
-        <input type="password" name="password" placeholder="Senha" required>
-        <input type="submit" value="Entrar">
+    <form method="post">
+        {% csrf_token %}
+        <h2>Login</h2>
+        {{ form.as_p }}
+        <button type="submit">Entrar</button>
     </form>
 </body>
-
 </html>

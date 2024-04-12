@@ -7,8 +7,8 @@
     <title>Registro</title>
 </head>
 <body>
-    <h2>Registro</h2>
     <form method="post">
+        <h2>Registro</h2>
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Registrar</button>
