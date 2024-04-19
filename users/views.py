@@ -1,36 +1,48 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from .forms import RegistrationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib import messages
 
 # Create your views here.
 
-def loginscreen(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('profile')  # redirecione para a página principal após o login
+def login_screen(request):
+    if request.method == "GET":
+        return render(request, 'login.html')
     else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+        username_form = request.POST.get('username')
+        password_form = request.POST.get('password')
 
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            # Redireciona para a página de login ou para onde desejar
-            return redirect('login')
+        user = authenticate(username = username_form, password = password_form)
+        if user:
+            return HttpResponse('Usuário Autenticado')
+        else:
+            messages.error(request, "Usuário ou Senha Invalida. Por favor tente novamente...")
+            return redirect('/user/login')
+def register_screen(request):
+    if request.method == "GET":
+        return render(request, 'register.html')
     else:
-        form = RegistrationForm()
-    return render(request, 'register.html', {'form': form})
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = User.objects.filter(username=username).first()
+        emailexists = User.objects.filter(email=email).first()
+        if user:
+            messages.error(request, "Este username já está sendo usado.")
+            return redirect('/user/register')
+        elif emailexists:
+            messages.error(request, "Este e-mail já está cadastrado.")
+            return redirect('/user/register')
+        elif request.POST.get('username')=='' or request.POST.get('email')=='' or request.POST.get('password')=='':
+            messages.error(request, "Os campos não podem ficar vazios.")
+            return redirect('/user/register')
+        else:
+            user= User.objects.create_user(username=username, email=email, password=password)
+            user.save()
+    return HttpResponse('Usuário cadastrado no sitema')
 
-@login_required
-def profile(request):
+def profile_screen(request):
     return render(request, 'profile.html')
